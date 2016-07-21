@@ -18,12 +18,17 @@ window.search = function () {
       var html = ''
       html += '<table>'
       pokemonList.forEach(function (mon) {
-        html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + '</td></tr>'
+        if (mon.footprints > 3) {
+          html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</td></tr>'
+        } else {
+          html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</td></tr>'
+        }
       })
       if (pokemonList.length < 1) {
         html += '<tr><td>No pokemon found in your area :(</td><tr>'
       }
-      html += '</table>'
+      html += '</table>\n'
+      html += 'Your location accuracy: ' + pos.coords.accuracy + 'm'
       element.innerHTML = html
     })
   }

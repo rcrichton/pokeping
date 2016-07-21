@@ -6,14 +6,6 @@ const moment = require('moment')
 
 const pokemon = require('./pokemon.json')
 
-// Santa monica pier
-// const lat = 34.01070142773539
-// const long = -118.49584221839905
-
-// Gateway shopping center, Durban, South Africa
-const lat = -29.725933492868684
-const long = 31.067200899124142
-
 // https://www.reddit.com/r/TheSilphRoad/comments/4s7kg5/how_much_distance_one_footstep_represents/
 const footprintDist = {
   zero: 40,
@@ -38,6 +30,7 @@ exports.findNearbyPokemon = (lat, long, callback) => {
     if (nearPokemon && nearPokemon.length > 0) {
       nearPokemon.forEach((mon) => {
         let distance = geolib.getDistance({latitude: lat, longitude: long}, {latitude: mon.latitude, longitude: mon.longitude})
+        let compass = geolib.getCompassDirection({latitude: lat, longitude: long}, {latitude: mon.latitude, longitude: mon.longitude}).rough
         let footprints = 999
         if (distance < footprintDist.zero) {
           footprints = 0
@@ -53,10 +46,15 @@ exports.findNearbyPokemon = (lat, long, callback) => {
           pokemonId: mon.pokemonId,
           distance: distance,
           footprints: footprints,
-          expire: expireDate
+          expire: expireDate,
+          compass: compass
         })
       })
     }
+
+    // sort by distance
+    foundPokemon = foundPokemon.sort((a, b) => { return a.distance - b.distance })
+
     callback(null, foundPokemon)
   })
 }
@@ -75,7 +73,7 @@ const printPokemon = (lat, long) => {
       console.log('----------------')
       foundPokemon.forEach((mon) => {
         if (mon.footprints <= 3) {
-          console.log(`${pokemon[mon.pokemonId]}\tis ${mon.distance}m away\t(footprints: ${mon.footprints})\texpires ${mon.expire.fromNow()}`)
+          console.log(`${pokemon[mon.pokemonId]}\tis ${mon.distance}m away\t(footprints: ${mon.footprints})\texpires ${mon.expire.fromNow()} (${mon.compass})`)
         }
       })
       console.log()
@@ -83,7 +81,7 @@ const printPokemon = (lat, long) => {
       console.log('---------------------------')
       foundPokemon.forEach((mon) => {
         if (mon.footprints > 3) {
-          console.log(`${pokemon[mon.pokemonId]}\tis ${mon.distance}m away\texpires ${mon.expire.fromNow()}`)
+          console.log(`${pokemon[mon.pokemonId]}\tis ${mon.distance}m away\texpires ${mon.expire.fromNow()} (${mon.compass})`)
         }
       })
       console.log()
@@ -94,7 +92,10 @@ const printPokemon = (lat, long) => {
 }
 
 // Run as script if executed directly
-if (!module.parent || window) {
+if (!module.parent && process.browser !== true) {
+  const lat = process.argv[2]
+  const long = process.argv[3]
+
   console.log('Polling PokeVision once a minute...')
   printPokemon(lat, long)
   setInterval(printPokemon, 60000, lat, long)
