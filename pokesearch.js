@@ -11,8 +11,8 @@ const pokemon = require('./pokemon.json')
 // const long = -118.49584221839905
 
 // Gateway shopping center, Durban, South Africa
-let lat = -29.725933492868684
-let long = 31.067200899124142
+const lat = -29.725933492868684
+const long = 31.067200899124142
 
 // https://www.reddit.com/r/TheSilphRoad/comments/4s7kg5/how_much_distance_one_footstep_represents/
 const footprintDist = {
@@ -23,8 +23,6 @@ const footprintDist = {
 }
 
 exports.findNearbyPokemon = (lat, long, callback) => {
-  lat = -29.725933492868684
-  long = 31.067200899124142
   request({ url: `https://crossorigin.me/https://pokevision.com/map/data/${lat}/${long}`, json: true }, (err, res, body) => {
     if (err) {
       console.log(err.stack)

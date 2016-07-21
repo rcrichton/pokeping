@@ -18,8 +18,11 @@ window.search = function () {
       var html = ''
       html += '<table>'
       pokemonList.forEach(function (mon) {
-        html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + '<td></tr>'
+        html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + '</td></tr>'
       })
+      if (pokemonList.length < 1) {
+        html += '<tr><td>No pokemon found in your area :(</td><tr>'
+      }
       html += '</table>'
       element.innerHTML = html
     })
