@@ -11,7 +11,7 @@ window.search = function () {
   }
 
   function findPokemon (pos) {
-    pokesearch.findNearbyPokemon(pos.latitude, pos.longitude, function (err, pokemonList) {
+    pokesearch.findNearbyPokemon(pos.coords.latitude, pos.coords.longitude, function (err, pokemonList) {
       if (err) {
         console.log(err.stack)
       }
