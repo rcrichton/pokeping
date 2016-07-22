@@ -1,15 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>PokePing</title>
-  <script src="dist/bundle.js" charset="UTF-8"></script>
+  <head>
+    <title>PokePing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue_grey-red.min.css">
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script src="dist/bundle.js" charset="UTF-8"></script>
+  </head>
 
-</head>
+  <body>
 
-<body>
-  <div id="pokemon">
-  </div>
-  <button onclick="window.search()">Search for nearby pokemon</button>
-</body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">PokePing</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+        </div>
+      </header>
+      <main class="mdl-layout__content">
+        <div class="page-content">
+          <div id="pokemon">
+          </div>
 
+          <!-- Colored FAB button -->
+          <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-js-ripple-effect" onclick="window.search()">
+            <i class="material-icons">refresh</i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+  </body>
+
+  <script>
+    window.search()
+  </script>
 </html>

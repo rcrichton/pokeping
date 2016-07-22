@@ -16,19 +16,19 @@ window.search = function () {
         console.log(err.stack)
       }
       var html = ''
-      html += '<table>'
+      html += '<ul class="mdl-list">'
       pokemonList.forEach(function (mon) {
         if (mon.footprints > 3) {
-          html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</td></tr>'
+          html += '<li class="mdl-list__item"><span class="mdl-list__item-primary-content">' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</li>'
         } else {
-          html += '<tr><td>' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</td></tr>'
+          html += '<li class="mdl-list__item"><span class="mdl-list__item-primary-content">' + pokemon[mon.pokemonId] + '\tis ' + mon.distance + 'm away\t(footprints: ' + mon.footprints + ')\texpires ' + mon.expire.fromNow() + ', direction: ' + mon.compass + '</li>'
         }
       })
       if (pokemonList.length < 1) {
-        html += '<tr><td>No pokemon found in your area :(</td><tr>'
+        html += '<li class="mdl-list__item"><span class="mdl-list__item-primary-content">No pokemon found in your area :(</li>'
       }
-      html += '</table>\n'
-      html += 'Your location accuracy: ' + pos.coords.accuracy + 'm'
+      html += '<li class="mdl-list__item"><span class="mdl-list__item-primary-content">Your location accuracy: ' + pos.coords.accuracy + 'm</li>'
+      html += '</ul>\n'
       element.innerHTML = html
     })
   }

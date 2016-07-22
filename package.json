@@ -6,8 +6,9 @@
   "scripts": {
     "test": "standard",
     "start": "node pokesearch.js",
-    "start-web": "npm run build-js && http-server",
-    "build-js": "browserify index.js -o dist/bundle.js"
+    "start-web": "concurrently 'npm run watch-js' 'http-server'",
+    "build-js": "browserify index.js -o dist/bundle.js",
+    "watch-js": "watchify index.js -o dist/bundle.js"
   },
   "author": "rcrichton",
   "license": "MIT",
@@ -18,7 +19,9 @@
   },
   "devDependencies": {
     "browserify": "^13.0.1",
+    "concurrently": "^2.2.0",
     "http-server": "^0.9.0",
-    "standard": "^7.1.2"
+    "standard": "^7.1.2",
+    "watchify": "^3.7.0"
   }
 }
