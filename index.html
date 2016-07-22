@@ -3,12 +3,32 @@
   <head>
     <title>PokePing</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Material Design lite -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue_grey-red.min.css">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.red-amber.min.css">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- 1. Load libraries -->
+    <!-- IE required polyfill -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+
+    <script src="node_modules/rxjs/bundles/Rx.umd.js"></script>
+    <script src="node_modules/@angular/core/bundles/core.umd.js"></script>
+    <script src="node_modules/@angular/common/bundles/common.umd.js"></script>
+    <script src="node_modules/@angular/compiler/bundles/compiler.umd.js"></script>
+    <script src="node_modules/@angular/platform-browser/bundles/platform-browser.umd.js"></script>
+    <script src="node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js"></script>
+
+    <!-- 2. Load our 'modules' -->
     <script src="dist/bundle.js" charset="UTF-8"></script>
   </head>
-
   <body>
 
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -21,21 +41,15 @@
         </div>
       </header>
       <main class="mdl-layout__content">
-        <div class="page-content">
-          <div id="pokemon">
+        <div class="page-content container">
+          <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+              <nearby-pokemon>Loading...</nearby-pokemon>
+            </div>
           </div>
-
-          <!-- Colored FAB button -->
-          <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-js-ripple-effect" onclick="window.search()">
-            <i class="material-icons">refresh</i>
-          </button>
         </div>
       </main>
     </div>
 
   </body>
-
-  <script>
-    window.search()
-  </script>
 </html>
