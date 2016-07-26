@@ -15,7 +15,7 @@ const footprintDist = {
 }
 
 exports.findNearbyPokemon = (lat, long, callback) => {
-  request({ url: `https://crossorigin.me/https://pokevision.com/map/data/${lat}/${long}`, json: true }, (err, res, body) => {
+  request({ url: `http://localhost:8080/pokemon/${lat}/${long}`, json: true }, (err, res, body) => {
     if (err) {
       console.log(err.stack)
       return callback(err)

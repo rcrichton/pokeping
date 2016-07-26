@@ -1,5 +1,6 @@
 // var Component = require('@angular/core').Component
-var pokesearch = require('../pokesearch')
+var request = require('request')
+var moment = require('moment')
 var pokemon = require('../pokemon.json')
 
 module.exports =
@@ -8,18 +9,17 @@ module.exports =
     template: `<div class="mdl-card mdl-shadow--2dp" style="width: 100%">
                 <div [ngClass]="{ 'mdl-progress--indeterminate': loading }" class="mdl-progress mdl-js-progress" style="width: 100%"></div>
                 <div class="mdl-card__supporting-text">
-                  <ul class="mdl-list">
-                    <li *ngIf="!nearbyPokemon || !nearbyPokemon.length || nearbyPokemon.length < 1">
-                      <span class="mdl-list__item-primary-content">
-                        No Pokemon found nearby :(
-                      </span>
-                    </li>
-                    <li *ngFor="let mon of nearbyPokemon" class="mdl-list__item">
-                      <span class="mdl-list__item-primary-content">
-                        {{pokemon[mon.pokemonId]}} is {{mon.distance}}m away and disappears in {{mon.expire.fromNow()}} <i class="material-icons">explore</i> {{mon.compass}}
-                      </span>
-                    </li>
-                  </ul>
+                  <table class="mdl-data-table mdl-js-data-table" style="border: 0">
+                    <tr *ngIf="!nearbyPokemon || !nearbyPokemon.length || nearbyPokemon.length < 1">
+                      <td class="mdl-data-table__cell--non-numeric" style="border: none">No Pokemon found nearby :(</td>
+                    </tr>
+                    <tr *ngFor="let mon of nearbyPokemon" class="">
+                      <td class="mdl-data-table__cell--non-numeric" style="border: none">{{mon.pokemonId}}</td>
+                      <td class="mdl-data-table__cell--non-numeric" style="border: none"><img *ngFor="let i of getNumber(mon.footprints)" src="img/paw.png"></td>
+                      <td class="mdl-data-table__cell--non-numeric" style="border: none">{{mon.expire ? 'disappears ' + mon.expire.fromNow() : ''}}</td>
+                      <td class="mdl-data-table__cell--non-numeric" style="border: none"><i *ngIf="mon.compass" class="material-icons">explore</i> {{mon.compass}}</td>
+                    </tr>
+                  </table>
 
                   <button [disabled]="loading" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-js-ripple-effect" (click)="search()">
                     <i class="material-icons">refresh</i>
@@ -39,35 +39,50 @@ module.exports =
     search: function () {
       let self = this
       self.loading = true
-      navigator.geolocation.getCurrentPosition(findPokemon)
-      function findPokemon (pos) {
+      navigator.geolocation.getCurrentPosition(function findPokemon (pos) {
         self.accuracy = pos.coords.accuracy
-        pokesearch.findNearbyPokemon(pos.coords.latitude, pos.coords.longitude, function (err, pokemonList) {
+        // hard code some active coords
+        pos.coords.latitude = -29.727386934052795
+        pos.coords.longitude = 31.066653728485107
+        request({ url: `http://localhost:8080/pokemon/${pos.coords.latitude}/${pos.coords.longitude}`, json: true }, (err, res, pokemonList) => {
           self.loading = false
           if (err) {
             console.log(err.stack)
           }
 
-          // hard code some data
-          pokemonList = [
-            {
-              pokemonId: '1',
-              distance: 40,
-              footprints: 0,
-              expire: { fromNow: () => { return 'a minute' } },
-              compass: 'N'
-            },
-            {
-              pokemonId: '5',
-              distance: 500,
-              footprints: 999,
-              expire: { fromNow: () => { return '6 minutes' } },
-              compass: 'E'
+          pokemonList.map((mon) => {
+            if (mon.expire) {
+              mon.expire = moment(mon.expire)
             }
-          ]
+            return mon
+          })
+
+          console.log(pokemonList)
+          // hard code some data
+          // pokemonList = [
+          //   {
+          //     pokemonId: '1',
+          //     distance: 40,
+          //     footprints: 0,
+          //     expire: { fromNow: () => { return 'a minute' } },
+          //     compass: 'N'
+          //   },
+          //   {
+          //     pokemonId: '5',
+          //     distance: 500,
+          //     footprints: 999,
+          //     expire: { fromNow: () => { return '6 minutes' } },
+          //     compass: 'E'
+          //   }
+          // ]
 
           self.nearbyPokemon = pokemonList
         })
-      }
+      })
+    },
+
+    getNumber: function (num) {
+      console.log(num)
+      return new Array(num)
     }
   })
