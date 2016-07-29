@@ -1,7 +1,10 @@
+'use strict'
+
 // var Component = require('@angular/core').Component
 var request = require('request')
 var moment = require('moment')
 var pokemon = require('../pokemon.json')
+const config = require('../config.json')
 
 module.exports =
   ng.core.Component({
@@ -41,7 +44,7 @@ module.exports =
       self.loading = true
       navigator.geolocation.getCurrentPosition(function findPokemon (pos) {
         self.accuracy = pos.coords.accuracy
-        request({ url: `http://localhost:8080/pokemon/${pos.coords.latitude}/${pos.coords.longitude}`, json: true }, (err, res, pokemonList) => {
+        request({ url: `${config.serverUrl}/${pos.coords.latitude}/${pos.coords.longitude}`, json: true }, (err, res, pokemonList) => {
           self.loading = false
           if (err) {
             console.log(`Something went wrong fetching the pokemon list: ${err.stack}`)

@@ -2,9 +2,13 @@
 
 const cors = require('cors')
 const express = require('express')
+const fs = require('fs')
 const geolib = require('geolib')
+const http = require('http')
+const https = require('https')
 const moment = require('moment')
 
+const config = require('./config.json')
 const PoGo = require('./pokemon-go-api')
 
 // https://www.reddit.com/r/TheSilphRoad/comments/4s7kg5/how_much_distance_one_footstep_represents/
@@ -77,6 +81,17 @@ app.get('/pokemon/:lat/:long', (req, res) => {
       return res.status(200).json(foundPokemon)
     })
   })
-}).listen(8080, () => {
-  console.log('PokePing server listening on 8080...')
 })
+
+if (config.secure) {
+  https.createServer({
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+  }, app).listen(8080, () => {
+    console.log('PokePing server listening on 8080...')
+  })
+} else {
+  http.createServer(app).listen(8080, () => {
+    console.log('PokePing server listening on 8080...')
+  })
+}
