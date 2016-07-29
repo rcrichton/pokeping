@@ -1,7 +1,5 @@
 'use strict'
 
-const geolib = require('geolib')
-const moment = require('moment')
 const proto = require('pokemongo-protobuf')
 const qs = require('querystring')
 const request = require('request')
@@ -53,7 +51,7 @@ module.exports = () => {
             return callback(err)
           }
           if (!res.headers.location) {
-            return callback(`Unable to login, the login server didn't return a location header (status code ${res.statusCode})`)
+            return callback(new Error(`Unable to login, the login server didn't return a location header (status code ${res.statusCode})`))
           }
           let ticket = URL.parse(res.headers.location, true).query.ticket
 
@@ -96,6 +94,10 @@ module.exports = () => {
                 return callback(err)
               }
               let resProto = proto.parse(body, 'POGOProtos.Networking.Envelopes.ResponseEnvelope')
+              console.log(resProto)
+              if (!resProto.api_url) {
+                return callback(new Error('An api url was not returned on login'))
+              }
               urlRpc = urlRpc.replace(/pgorelease\.nianticlabs\.com\/plfe(\/\d+)?/, resProto.api_url)
               return callback(null, { accessToken: accessToken, url: urlRpc, playerInfo: resProto })
             })
