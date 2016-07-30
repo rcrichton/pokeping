@@ -17,9 +17,11 @@ module.exports =
                       <span>{{errorText}}</span>
                     </div>
                     <div *ngFor="let mon of nearbyPokemon" class="col-xs-4" style="height: 150px">
-                      <div class="pkm pkm{{pokemon[mon.pokemonId]}} small"></div>
-                      <div class="center-block" style="height: 20px"><img *ngFor="let i of getNumber(mon.footprints)" src="img/track.png" width="20px" height="20px" style="margin: 0 3px 0 3px"></div>
-                      <div style="height: 40px">{{mon.expire ? 'Disappears ' + mon.expire.fromNow() : ''}}<span *ngIf="mon.compass">, head {{mon.compass}}</span></div>
+                      <div class="pkm pkm{{pokemon[mon.pokemonId]}} mini img-responsive center-block"></div>
+                      <div align="center" style="height: 20px">
+                        <img *ngFor="let i of getNumber(mon.footprints)" src="img/track.png" width="20px" height="20px">
+                      </div>
+                      <div style="height: 40px" class="text-center">{{mon.expire ? 'Disappears ' + mon.expire.fromNow() : ''}}<span *ngIf="mon.compass">, head {{mon.compass}}</span></div>
                     </div>
                   </div>
 
