@@ -4,6 +4,7 @@ const cors = require('cors')
 const express = require('express')
 const fs = require('fs')
 const geolib = require('geolib')
+const log = require('winston')
 const http = require('http')
 const https = require('https')
 const moment = require('moment')
@@ -21,16 +22,17 @@ const footprintDist = {
 
 const app = express()
 app.use(cors())
+const pogo = PoGo()
+log.clear()
+log.add(log.transports.Console, { timestamp: true })
+
+let authExpireDate = null
 
 app.get('/pokemon/:lat/:long', (req, res) => {
-  console.log(`GET ${req.url}`)
-  const pogo = PoGo()
-  pogo.login('pokeping1234', 'pingpoke#123', (err) => {
-    if (err) {
-      console.log(err.stack)
-      return res.status(500).send(err)
-    }
+  log.info(`GET ${req.url}`)
 
+  const queryMap = () => {
+    log.info('Querying map objects')
     let lat = parseFloat(req.params.lat)
     let long = parseFloat(req.params.long)
 
@@ -38,7 +40,7 @@ app.get('/pokemon/:lat/:long', (req, res) => {
 
     pogo.getMapObjects((err, mapInfo) => {
       if (err) {
-        console.log(err.stack)
+        log.info(err.stack)
         return res.status(500).send(err)
       }
 
@@ -80,18 +82,34 @@ app.get('/pokemon/:lat/:long', (req, res) => {
 
       return res.status(200).json(foundPokemon)
     })
-  })
+  }
+
+  if (!authExpireDate || authExpireDate.isBefore(moment())) {
+    log.info('Auth expired. Logging into Pokemon Go server')
+    pogo.login('pokeping1234', 'pingpoke#123', (err, res) => {
+      if (err) {
+        log.error(err.stack)
+        return res.status(500).send(err)
+      }
+
+      authExpireDate = moment(+res.expireTs)
+
+      queryMap()
+    })
+  } else {
+    queryMap()
+  }
 })
 
 if (config.secure) {
   https.createServer({
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
+    key: fs.readFileSync(config.key),
+    cert: fs.readFileSync(config.cert)
   }, app).listen(8080, () => {
-    console.log('PokePing server listening on 8080...')
+    log.info('PokePing server listening on 8080...')
   })
 } else {
   http.createServer(app).listen(8080, () => {
-    console.log('PokePing server listening on 8080...')
+    log.info('PokePing server listening on 8080...')
   })
 }

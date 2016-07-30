@@ -6,6 +6,8 @@ const request = require('request')
 const s2 = require('s2geometry-node')
 const URL = require('url')
 
+const moment = require('moment')
+
 const headers = {'User-Agent': 'Niantic App'}
 const loginUrl = 'https://sso.pokemon.com/sso/login?service=https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize'
 const urlOauth = 'https://sso.pokemon.com/sso/oauth2.0/accessToken'
@@ -94,12 +96,11 @@ module.exports = () => {
                 return callback(err)
               }
               let resProto = proto.parse(body, 'POGOProtos.Networking.Envelopes.ResponseEnvelope')
-              console.log(resProto)
               if (!resProto.api_url) {
                 return callback(new Error('An api url was not returned on login'))
               }
               urlRpc = urlRpc.replace(/pgorelease\.nianticlabs\.com\/plfe(\/\d+)?/, resProto.api_url)
-              return callback(null, { accessToken: accessToken, url: urlRpc, playerInfo: resProto })
+              return callback(null, { accessToken: accessToken, url: urlRpc, playerInfo: resProto, expireTs: resProto.auth_ticket.expire_timestamp_ms })
             })
           })
         })

@@ -3,13 +3,14 @@ PokePing
 
 Find Pokemon using a tracker that works!
 
-:warning: This is an in development POC tool for now. In the future we plan to create a website track Pokemon similar to how the Pokemon GO tracker is surposed to work.
+:warning: This is an in development POC tool for now. In the future we plan to create a website track Pokemon similar to how the Pokemon GO tracker is supposed to work.
 
 To run:
 
 ```sh
+sudo apt-get install libprotobuf-dev build-essential pkg-config
 npm install
-npm start-web
+npm start
 ```
 
 Then, access the url that is displayed.

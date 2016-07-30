@@ -1,4 +1,6 @@
 {
   "serverUrl": "http://localhost:8080/pokemon",
-  "secure": false
+  "secure": false,
+  "cert": "cert.pem",
+  "key": "key.pem"
 }
