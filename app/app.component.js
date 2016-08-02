@@ -47,8 +47,12 @@ module.exports =
       navigator.geolocation.getCurrentPosition(function findPokemon (pos) {
         self.accuracy = pos.coords.accuracy
         request({ url: `${config.serverUrl}/${pos.coords.latitude}/${pos.coords.longitude}`, json: true }, (err, res, pokemonList) => {
-          if (err) {
-            console.log(`Something went wrong fetching the pokemon list: ${err.stack}`)
+          if (err || res.statusCode === 500) {
+            if (err) {
+              console.log(`Something went wrong fetching the pokemon list: ${err.stack}`)
+            } else {
+              console.log(`Something went wrong fetching the pokemon list: Recieved a 500 response with body ${JSON.stringify(pokemonList)}`)
+            }
             self.errorText = 'Something went wrong fetching data from the game server, please try again...'
             self.nearbyPokemon = []
             self.loading = false
@@ -75,4 +79,4 @@ module.exports =
     getNumber: function (num) {
       return new Array(num)
     }
-  })
+  }, { enableHighAccuracy: true })
