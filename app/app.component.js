@@ -68,7 +68,7 @@ module.exports =
             })
             self.nearbyPokemon = pokemonList
           } else {
-            self.errorText = 'There are no pokemon nearby right now :('
+            self.errorText = ':( There are no Pokemon nearby right now or PokePing is being rate limited by the Pokemon Go servers'
             self.nearbyPokemon = []
           }
           self.loading = false

@@ -10,6 +10,14 @@ const https = require('https')
 const moment = require('moment')
 
 const config = require('./config.json')
+const accounts = require('./accounts.json')
+// eg.
+// const accounts = [
+//   {
+//     username: 'xxx',
+//     password: 'yyy'
+//   }
+// ]
 const PoGo = require('./pokemon-go-api')
 
 // https://www.reddit.com/r/TheSilphRoad/comments/4s7kg5/how_much_distance_one_footstep_represents/
@@ -22,11 +30,22 @@ const footprintDist = {
 
 const app = express()
 app.use(cors())
-const pogo = PoGo()
+app.set('etag', false)
+
 log.clear()
 log.add(log.transports.Console, { timestamp: true })
 
-let authExpireDate = null
+accounts.forEach((acc) => {
+  acc.pogo = PoGo()
+})
+let currAccIdx = 0
+
+const useNextAccount = () => {
+  currAccIdx++
+  if (currAccIdx >= accounts.length) {
+    currAccIdx = 0
+  }
+}
 
 app.get('/pokemon/:lat/:long', (req, res) => {
   log.info(`GET ${req.url}`)
@@ -36,9 +55,9 @@ app.get('/pokemon/:lat/:long', (req, res) => {
     let lat = parseFloat(req.params.lat)
     let long = parseFloat(req.params.long)
 
-    pogo.setLocation(lat, long)
+    accounts[currAccIdx].pogo.setLocation(lat, long)
 
-    pogo.getMapObjects((err, mapInfo) => {
+    accounts[currAccIdx].pogo.getMapObjects((err, mapInfo) => {
       if (err) {
         log.info(err.stack)
         return res.status(500).send(err)
@@ -80,23 +99,25 @@ app.get('/pokemon/:lat/:long', (req, res) => {
       // sort by distance
       foundPokemon = foundPokemon.sort((a, b) => { return a.distance - b.distance })
 
+      useNextAccount()
       return res.status(200).json(foundPokemon)
     })
   }
 
-  if (!authExpireDate || authExpireDate.isBefore(moment())) {
-    log.info('Auth expired. Logging into Pokemon Go server')
-    pogo.login('pokeping1234', 'pingpoke#123', (err, res) => {
+  if (!accounts[currAccIdx].authExpireDate || accounts[currAccIdx].authExpireDate.isBefore(moment())) {
+    log.info('Auth expired. Logging into Pokemon Go server with account ' + accounts[currAccIdx].username)
+    accounts[currAccIdx].pogo.login(accounts[currAccIdx].username, accounts[currAccIdx].password, (err, accountInfo) => {
       if (err) {
         log.error(err.stack)
         return res.status(500).send(err)
       }
 
-      authExpireDate = moment(+res.expireTs)
+      accounts[currAccIdx].authExpireDate = moment(+accountInfo.expireTs)
 
       queryMap()
     })
   } else {
+    log.info('API token still valid, continuing with account ' + accounts[currAccIdx].username)
     queryMap()
   }
 })

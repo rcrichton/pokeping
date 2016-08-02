@@ -6,8 +6,6 @@ const request = require('request')
 const s2 = require('s2geometry-node')
 const URL = require('url')
 
-const moment = require('moment')
-
 const headers = {'User-Agent': 'Niantic App'}
 const loginUrl = 'https://sso.pokemon.com/sso/login?service=https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize'
 const urlOauth = 'https://sso.pokemon.com/sso/oauth2.0/accessToken'
@@ -36,7 +34,8 @@ module.exports = () => {
 
   return {
     login: (username, password, callback) => {
-      request({ url: loginUrl, json: true, headers: headers, jar: true }, (err, res, body) => {
+      let jar = request.jar()
+      request({ url: loginUrl, json: true, headers: headers, jar: jar }, (err, res, body) => {
         if (err) {
           return callback(err)
         }
@@ -48,7 +47,7 @@ module.exports = () => {
           username: username,
           password: password
         }
-        request({ url: loginUrl, form: postBody, headers: headers, method: 'POST', jar: true }, (err, res, body) => {
+        request({ url: loginUrl, form: postBody, headers: headers, method: 'POST', jar: jar }, (err, res, body) => {
           if (err) {
             return callback(err)
           }
