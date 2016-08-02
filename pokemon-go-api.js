@@ -207,9 +207,13 @@ module.exports = () => {
           return callback(err)
         }
 
-        let resProto = proto.parse(body, 'POGOProtos.Networking.Envelopes.ResponseEnvelope')
-        let mapInfo = proto.parse(resProto.returns[0], 'POGOProtos.Networking.Responses.GetMapObjectsResponse')
-        callback(null, mapInfo)
+        try {
+          let resProto = proto.parse(body, 'POGOProtos.Networking.Envelopes.ResponseEnvelope')
+          let mapInfo = proto.parse(resProto.returns[0], 'POGOProtos.Networking.Responses.GetMapObjectsResponse')
+          callback(null, mapInfo)
+        } catch (err) {
+          callback(err)
+        }
       })
     }
   }
