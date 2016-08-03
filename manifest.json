@@ -1,0 +1,16 @@
+{
+  "name": "PokéPing",
+  "short_name": "PokéPing",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "red",
+  "description": "Find Pokemon in Pokemon GO using a tracker that works",
+  "icons": [
+    {
+      "src": "img/ping.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "red"
+}
