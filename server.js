@@ -29,7 +29,7 @@ const footprintDist = {
 }
 
 const app = express()
-app.use(cors())
+app.use(cors({ origin: [ 'https://pokeping.net', 'http://127.0.0.1:8081' ] }))
 app.set('etag', false)
 
 log.clear()
