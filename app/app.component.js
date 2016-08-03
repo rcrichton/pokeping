@@ -25,8 +25,9 @@ module.exports =
                     </div>
                   </div>
 
-                  <button [disabled]="loading" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-js-ripple-effect" (click)="search()">
-                    <i class="material-icons">refresh</i>
+                  <button [disabled]="loading || cooldown" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored mdl-js-ripple-effect" (click)="search()">
+                    <i *ngIf="!cooldown" class="material-icons">refresh</i>
+                    <span *ngIf="cooldown">{{cooldownSeconds}}</span>
                   </button>
                   <div>Location accuracy is {{accuracy}}m</div>
                 </div>
@@ -44,6 +45,21 @@ module.exports =
     search: function () {
       let self = this
       self.loading = true
+      self.cooldown = false
+      self.cooldownSeconds = 0
+
+      const startCooldown = (seconds) => {
+        self.cooldown = true
+        self.cooldownSeconds = seconds
+        let interval = setInterval(() => {
+          self.cooldownSeconds--
+          if (self.cooldownSeconds === 0) {
+            clearInterval(interval)
+            self.cooldown = false
+          }
+        }, 1000)
+      }
+
       navigator.geolocation.getCurrentPosition(function findPokemon (pos) {
         self.accuracy = pos.coords.accuracy
         request({ url: `${config.serverUrl}/${pos.coords.latitude}/${pos.coords.longitude}`, json: true }, (err, res, pokemonList) => {
@@ -67,6 +83,7 @@ module.exports =
               return mon
             })
             self.nearbyPokemon = pokemonList
+            startCooldown(15)
           } else {
             self.errorText = ':( There are no Pokemon nearby right now or PokePing is being rate limited by the Pokemon Go servers'
             self.nearbyPokemon = []
